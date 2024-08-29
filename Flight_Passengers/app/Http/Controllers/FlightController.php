@@ -4,32 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Flight;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 
 class FlightController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Flight::query();
-
-        // Filtering
-        if ($request->has('departure_city')) {
-            $query->where('departure_city', 'like', '%' . $request->input('departure_city') . '%');
-        }
-        if ($request->has('arrival_city')) {
-            $query->where('arrival_city', 'like', '%' . $request->input('arrival_city') . '%');
-        }
-
-        // Sorting
-        $sortBy = $request->input('sort_by', 'id');
-        $sortOrder = $request->input('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $flights = $query->paginate($perPage);
+        $flights = QueryBuilder::for(Flight::class)
+            ->allowedFilters([
+                AllowedFilter::partial('departure_city'),
+                AllowedFilter::partial('arrival_city'),
+            ])
+            ->allowedSorts([
+                'id',
+                'departure_city',
+                'arrival_city',
+                'created_at'
+            ])
+            ->paginate($request->input('per_page', 15));
 
         return response($flights);
     }
+
     public function getUsers($flightId)
     {
         $flight = Flight::findOrFail($flightId);
@@ -38,5 +36,4 @@ class FlightController extends Controller
 
         return response($users);
     }
-
 }

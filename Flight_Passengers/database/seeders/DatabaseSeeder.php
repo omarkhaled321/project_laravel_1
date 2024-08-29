@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,7 +17,13 @@ class DatabaseSeeder extends Seeder
         $this->call(PassengerSeeder::class);
         $this->call(FlightPassengerSeeder::class);
         $this->call(RolePermissionSeeder::class);
-
+        // Create a new user
+        $user = User::create([
+            'name' => 'Omar',
+            'email' => 'Omar.Khaled@gmail.com',
+            'password' => bcrypt('password'),
+        ]);
 
     }
 }
+

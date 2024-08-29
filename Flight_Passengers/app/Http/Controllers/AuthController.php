@@ -20,7 +20,7 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-            return response(['token' => $token], 200);
+            return response(['success'=>true,'token' => $token], 200);
         }
 
         return response(['error' => 'Unauthorized'], 401);

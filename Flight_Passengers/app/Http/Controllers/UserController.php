@@ -4,29 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
-
-        // Filtering
-        if ($request->has('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
-        }
-        if ($request->has('email')) {
-            $query->where('email', $request->input('email'));
-        }
-
-        // Sorting
-        $sortBy = $request->input('sort_by', 'id');
-        $sortOrder = $request->input('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $users = $query->paginate($perPage);
+        $users = QueryBuilder::for(User::class)
+            ->allowedFilters([
+                AllowedFilter::partial('name'),
+                AllowedFilter::exact('email'),
+            ])
+            ->allowedSorts(['id', 'name', 'email', 'created_at'])
+            ->paginate($request->input('per_page', 15));
 
         return response($users);
     }
@@ -83,4 +75,5 @@ class UserController extends Controller
         return response(null, 204);
     }
 }
+
 
