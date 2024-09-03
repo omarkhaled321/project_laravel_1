@@ -9,13 +9,7 @@ class Flight extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'number',
-        'departure_city',
-        'arrival_city',
-        'departure_time',
-        'arrival_time',
-    ];
+    protected $gaurded=[];
 
     public function passengers()
     {

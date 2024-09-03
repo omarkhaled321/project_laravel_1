@@ -7,6 +7,9 @@ use App\Models\User;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
+use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
+
 
 class UserController extends Controller
 {
@@ -73,6 +76,26 @@ class UserController extends Controller
         $user->delete();
 
         return response(null, 204);
+    }
+    public function assignRole(Request $request)
+    {
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $user = User::find($request->user_id);
+        if ($user) {
+            $user->assignRole($request->role);
+            return response()->json(['message' => 'Role assigned successfully.']);
+        }
+
+        return response(['message' => 'User not found.'], 404);
     }
 }
 

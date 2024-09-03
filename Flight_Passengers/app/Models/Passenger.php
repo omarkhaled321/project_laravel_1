@@ -9,14 +9,7 @@ class Passenger extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'FirstName',
-        'LastName',
-        'email',
-        'password',
-        'dob',
-        'passport_expiry_date',
-    ];
+    protected $gaurded = [];
 
     public function flights()
     {

@@ -12,18 +12,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, HasRoles; // Corrected SoftDeletes
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, HasRoles;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $guarded = []; // Use an empty array to allow all attributes to be mass-assignable
 
     /**
      * The attributes that should be hidden for arrays.
@@ -44,4 +40,3 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 }
-
