@@ -16,6 +16,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::create($data);
+        $user->assignRole('user');
         $token = $user->createToken('Personal Access Token')->plainTextToken;
         return response(['success'=>true,'token' => $token], 200);
     }
