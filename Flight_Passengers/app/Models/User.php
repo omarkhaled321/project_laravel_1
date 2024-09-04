@@ -19,7 +19,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $guarded = []; // Use an empty array to allow all attributes to be mass-assignable
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ]; // Use an empty array to allow all attributes to be mass-assignable
 
     /**
      * The attributes that should be hidden for arrays.

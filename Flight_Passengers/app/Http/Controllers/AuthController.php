@@ -8,12 +8,23 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+     public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name'=>'required|string',
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        $user = User::create($data);
+        $token = $user->createToken('Personal Access Token')->plainTextToken;
+        return response(['success'=>true,'token' => $token], 200);
+    }
     // Handle login
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
