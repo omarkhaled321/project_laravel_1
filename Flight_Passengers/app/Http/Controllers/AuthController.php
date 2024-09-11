@@ -15,11 +15,15 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        $user = User::create($data);
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']), // Hash the password
+        ]);
+
         $user->assignRole('user');
         $token = $user->createToken('Personal Access Token')->plainTextToken;
-        return response(['success'=>true,'token' => $token], 200);
-    }
+        return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);    }
     // Handle login
     public function login(Request $request)
     {
@@ -32,10 +36,10 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-            return response(['success'=>true,'token' => $token], 200);
+            return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);
         }
 
-        return response(['error' => 'Unauthorized'], 401);
+        return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);
     }
 
     // Handle logout
@@ -43,6 +47,6 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response(['message' => 'Logged out successfully'], 200);
+        return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);
     }
 }

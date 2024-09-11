@@ -17,8 +17,9 @@ class UserController extends Controller
     {
         $users = QueryBuilder::for(User::class)
             ->allowedFilters([
-                AllowedFilter::partial('name'),
-                AllowedFilter::exact('email'),
+                id,
+                name,
+                email,
             ])
             ->allowedSorts(['id', 'name', 'email', 'created_at'])
             ->paginate($request->input('per_page', 15));
@@ -26,43 +27,45 @@ class UserController extends Controller
         return response($users);
     }
 
-    public function store(Request $request)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     // Validate the incoming request data
+    //    $data= $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'password' => 'required|string|min:8',
+    //     ]);
 
-        // Create a new user
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => bcrypt($request->input('password')),
-        ]);
+    //     // Create a new user
+    //     $user = User::create($data);
 
-        return response($user, 201);
-    }
+    //     return response($user, 201);
+    // }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         // Validate the incoming request data
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:users,email,' . $id,
             'password' => 'sometimes|required|string|min:8',
+            'role' =>'nullable|existes:roles,name',
         ]);
+        if($user){
+            $user->assignRole($request->role);
+            $data->unset($data['role']);
+        }
+        
+        $data->update($data);
 
-        // Find the user
-        $user = User::findOrFail($id);
+        //$user = User::findOrFail($id);
 
         // Update the user
-        $user->update([
-            'name' => $request->input('name', $user->name),
-            'email' => $request->input('email', $user->email),
-            'password' => $request->has('password') ? bcrypt($request->input('password')) : $user->password,
-        ]);
+        //$user->update([
+            //'name' => $request->input('name', $user->name),
+            //'email' => $request->input('email', $user->email),
+            //'password' => $request->has('password') ? bcrypt($request->input('password')) : $user->password,
+        //]);
 
         return response($user);
     }
@@ -75,7 +78,7 @@ class UserController extends Controller
         // Delete the user
         $user->delete();
 
-        return response(null, 204);
+        return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);
     }
     public function assignRole(Request $request)
     {
@@ -86,7 +89,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            return response(['success' => true, 'data' => null], Response::HTTP_NO_CONTENT);
         }
 
         $user = User::find($request->user_id);

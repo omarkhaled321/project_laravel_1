@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,20 +16,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(PassengerSeeder::class);
-        $this->call(FlightPassengerSeeder::class);
-        $this->call(RolePermissionSeeder::class);
-        // Create a new user
-        $user = User::create([
+        
+        $permissions = [
+            'view users',
+            'edit users',
+            'delete users',
+            'create posts',
+            'edit posts',
+            'delete posts',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $adminRole = Role::create(['name' => 'admin']);
+        $editorRole = Role::create(['name' => 'editor']);
+        
+        $adminRole->givePermissionTo(Permission::all());
+        $editorRole->givePermissionTo([
+            'create posts',
+            'edit posts',
+            'delete posts',
+        ]);
+        $user1 = User::create([
             'name' => 'Omar',
             'email' => 'Omar.Khaled@gmail.com',
             'password' => bcrypt('password'),
         ]);
-        $user = User::create([
+        $user2 = User::create([
             'name' => 'Omarr',
             'email' => 'Omar.Khaled22@gmail.com',
             'password' => bcrypt('passwordd'),
         ]);
+        $user1->assignRole('admin'); 
+        $user2->assignRole('editor'); 
     }
 }
-

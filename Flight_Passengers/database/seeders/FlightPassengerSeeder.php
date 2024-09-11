@@ -17,7 +17,7 @@ class FlightPassengerSeeder extends Seeder
         $passengers = Passenger::all();
 
         foreach ($flights as $flight) {
-            $assignedPassengers = $passengers->random(rand(1, 10)); // Assign 1 to 10 passengers per flight
+            $assignedPassengers = $passengers->random(rand(1, 10)); 
 
             foreach ($assignedPassengers as $passenger) {
                 $flight->passengers()->attach($passenger->id);

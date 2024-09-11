@@ -10,29 +10,24 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 
-// Public Routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-// Protected Routes (requires authentication)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', function (Request $request) {
         return $request->user();
     });
-    Route::post('assign-role', [UserController::class, 'assignRole']);
-
-    // Routes with Role-Based Access
     Route::middleware('role:admin')->group(function () {
         Route::get('users', [UserController::class, 'index']);
         Route::post('users', [UserController::class, 'store']);
-        Route::put('users/{id}', [UserController::class, 'update']);
-        Route::delete('users/{id}', [UserController::class, 'destroy']);
+        Route::put('users/{user}', [UserController::class, 'update']);
+        Route::delete('users/{user}', [UserController::class, 'destroy']);
+        Route::apiResource('users',UserController::class);
     });
-
-    // Routes with Permission-Based Access
-    Route::middleware('permission:view flights')->group(function () {
+    Route::middleware('permission:view flights')->group(function () {// permision veiw flight  admin
         Route::get('flights', [FlightController::class, 'index']);
+        Route::get('flights/{flight}', [FlightController::class, 'show']);
     });
 
 });

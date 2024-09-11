@@ -14,9 +14,12 @@ class FlightController extends Controller
     {
         $flights = QueryBuilder::for(Flight::class)
             ->allowedFilters([
-                AllowedFilter::partial('departure_city'),
-                AllowedFilter::partial('arrival_city'),
+                'departure_city',
+                'arrival_city',
+                AllowedFilter::exact('id'),
             ])
+            ->with('passengers')
+            ->defaultSort('updated_at')
             ->allowedSorts([
                 'id',
                 'departure_city',
@@ -28,12 +31,8 @@ class FlightController extends Controller
         return response($flights);
     }
 
-    public function getUsers($flightId)
+    public function show(Flight $flight)
     {
-        $flight = Flight::findOrFail($flightId);
-
-        $users = $flight->passengers()->paginate(); // Adjust pagination as needed
-
         return response($users);
     }
 }
